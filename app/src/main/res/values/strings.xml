@@ -1,0 +1,10 @@
+<resources>
+    <string name="data_url">https://ids.aurafutures.com/api/v1/campaigns/7934/manifest/4</string>
+    <string name="app_name">Demo</string>
+    <string name="app_name_settings">Demo settings</string>
+    <string name="action_settings">Settings</string>
+    <string name="permision_dialog_message">In order to continue, you must allow application to use device storage. Click OK button to close the application.</string>
+    <string name="permision_dialog_title">No access to data storage</string>
+    <string name="ok_button_title">OK</string>
+
+</resources>
