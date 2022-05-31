@@ -193,21 +193,15 @@ public class LaunchActivity extends AppCompatActivity {
             String jsonResponse = getJSONResponse();
 
             if (jsonResponse == null) {
+                makeToast("An error occured. Server response is empty.");
+
                 try {
                     Thread.sleep(3000);
                 } catch (InterruptedException ex ) {
                     Log.e(this.getClass().getName(), ex.getMessage());
                 }
 
-                makeToast("An error occured. Server response is empty.");
-
                 return;
-            }
-
-            try {
-                Thread.sleep(3000);
-            } catch (InterruptedException ex ) {
-                Log.e(this.getClass().getName(), ex.getMessage());
             }
 
             makeToast("Parsing media list...");
@@ -216,12 +210,6 @@ public class LaunchActivity extends AppCompatActivity {
             String newHash = Tools.md5(jsonResponse);
 
             if (!lastUpdateHash.equals(newHash)) {
-                try {
-                    Thread.sleep(3000);
-                } catch (InterruptedException ex ) {
-                    Log.e(this.getClass().getName(), ex.getMessage());
-                }
-
                 makeToast("Updating media list...");
 
                 try {

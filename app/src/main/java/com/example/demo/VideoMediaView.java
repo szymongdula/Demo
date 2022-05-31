@@ -61,7 +61,8 @@ public class VideoMediaView extends TextureView implements MediaViewInterface, T
 
         try {
             mediaPlayer.setDataSource(filePath);
-            mediaPlayer.prepare();
+            //mediaPlayer.prepare();
+            mediaPlayer.prepareAsync();
         } catch (IOException e) {
             e.printStackTrace();
         }

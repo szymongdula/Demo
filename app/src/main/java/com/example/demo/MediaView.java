@@ -129,7 +129,7 @@ public class MediaView extends ViewGroup {
                 break;
         }
     }
-    
+
     public void skip() {
 
     }
