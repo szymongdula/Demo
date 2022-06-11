@@ -1,6 +1,7 @@
 package com.example.demo;
 
 import android.graphics.BitmapFactory;
+import android.os.Handler;
 import android.os.Looper;
 
 public class ImageMediaView extends android.support.v7.widget.AppCompatImageView implements MediaViewInterface {

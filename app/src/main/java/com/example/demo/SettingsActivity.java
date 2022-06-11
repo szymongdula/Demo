@@ -61,7 +61,7 @@ config.transitionDuration
  */
         EditText transitionDurationEditText = (EditText) findViewById(R.id.transitionDuration);
 
-        transitionDurationEditText.setText(String.valueOf(config.getInt("transitionDuration", 2000)));
+        transitionDurationEditText.setText(String.valueOf(config.getInt("transitionDuration", 2500)));
 
         transitionDurationEditText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -90,7 +90,7 @@ config.imageDisplayDuration
 
         EditText imageDisplayDurationEditText = (EditText) findViewById(R.id.imageDisplayDuration);
 
-        imageDisplayDurationEditText.setText(String.valueOf(config.getInt("imageDisplayDuration", 5000)));
+        imageDisplayDurationEditText.setText(String.valueOf(config.getInt("imageDisplayDuration", 10000)));
 
         imageDisplayDurationEditText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -119,7 +119,7 @@ config.cropVideoDurationTo
 
         EditText cropVideoDurationToEditText = (EditText) findViewById(R.id.cropVideoDurationTo);
 
-        cropVideoDurationToEditText.setText(String.valueOf(config.getInt("cropVideoDurationTo", 0)));
+        cropVideoDurationToEditText.setText(String.valueOf(config.getInt("cropVideoDurationTo", 10000)));
 
         cropVideoDurationToEditText.addTextChangedListener(new TextWatcher() {
             @Override

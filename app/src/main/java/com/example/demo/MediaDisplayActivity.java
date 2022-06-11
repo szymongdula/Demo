@@ -23,6 +23,7 @@ import android.widget.VideoView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.Iterator;
 
 public class MediaDisplayActivity extends AppCompatActivity {
@@ -35,9 +36,9 @@ public class MediaDisplayActivity extends AppCompatActivity {
     static boolean DUMP_LOG_ON_SCREEN = false;
     static boolean RESIZE_MEDIA_TO_COVER_SCREEN = false;
 
-    static int TRANSITION_DURATION = 7000;
-    static int IMAGE_DISPLAY_DURATION = 20000;
-    static int CROP_VIDEO_DURATION_TO = 20000;
+    static int TRANSITION_DURATION = 2500;
+    static int IMAGE_DISPLAY_DURATION = 10000;
+    static int CROP_VIDEO_DURATION_TO = 10000;
 
     private SharedPreferences config;
     private JSONObject mediaList;
@@ -61,11 +62,33 @@ public class MediaDisplayActivity extends AppCompatActivity {
 
         config = getSharedPreferences("config", MODE_PRIVATE);
 
+        File file = new File("/etc/media_codecs.xml");
+
+        Log.d("file.canRead()", String.valueOf(file.canRead()));
+
+        //rewrite old config
+        Boolean overwriteConfig = config.getBoolean("overwriteConfig", true);
+
+        if (overwriteConfig) {
+            config.edit()
+                .putInt("cropVideoDurationTo", CROP_VIDEO_DURATION_TO)
+                .putInt("imageDisplayDuration", IMAGE_DISPLAY_DURATION)
+                .putInt("transitionDuration", TRANSITION_DURATION)
+                .putBoolean("overwriteConfig", false)
+                .commit();
+        }
+
         DUMP_LOG_ON_SCREEN = config.getBoolean("dumpLog", DUMP_LOG_ON_SCREEN);
         RESIZE_MEDIA_TO_COVER_SCREEN = config.getBoolean("resizeMediaToCoverScreen", RESIZE_MEDIA_TO_COVER_SCREEN);
         TRANSITION_DURATION = config.getInt("transitionDuration", TRANSITION_DURATION);
         IMAGE_DISPLAY_DURATION = config.getInt("imageDisplayDuration", IMAGE_DISPLAY_DURATION);
         CROP_VIDEO_DURATION_TO = config.getInt("cropVideoDurationTo", CROP_VIDEO_DURATION_TO);
+
+        int minTransDur = (int) Math.min((CROP_VIDEO_DURATION_TO > 0) ? CROP_VIDEO_DURATION_TO : 9999999 , IMAGE_DISPLAY_DURATION) / 2;
+
+        if (TRANSITION_DURATION > minTransDur ) {
+            TRANSITION_DURATION = (int) (minTransDur * 0.7);
+        }
 
         try {
             mediaList = new JSONObject(config.getString("current_files_list", "{}"));
@@ -85,6 +108,8 @@ public class MediaDisplayActivity extends AppCompatActivity {
         log("TRANSITION_DURATION: " + MediaDisplayActivity.TRANSITION_DURATION);
         log("IMAGE_DISPLAY_DURATION: " + MediaDisplayActivity.IMAGE_DISPLAY_DURATION);
         log("CROP_VIDEO_DURATION_TO: " + MediaDisplayActivity.CROP_VIDEO_DURATION_TO);
+
+        root.setBackgroundColor(0xFF000000);
 
         setupViews(displayMetrics, root);
 
@@ -219,7 +244,7 @@ public class MediaDisplayActivity extends AppCompatActivity {
     private void start() {
         frontView.setFile(getNext());
         backView.setFile(getNext());
-
+        backView.setAlpha(0);
         frontView.bringToFront();
 
         if (DUMP_LOG_ON_SCREEN ) {
@@ -245,23 +270,26 @@ public class MediaDisplayActivity extends AppCompatActivity {
             .withStartAction(new Runnable() {
                 @Override
                 public void run() {
-                    log("Mediaview " + frontView.getLabel() + " (" + Tools.getFileName(frontView.filePath) + ") -> withStartAction");
-
                     backView.setLocked(true);
-                    backView.setAlpha(1.0f);
-
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            backView.play();
-                        }
-                    }).start();
+//                    log("Mediaview " + frontView.getLabel() + " (" + Tools.getFileName(frontView.filePath) + ") -> withStartAction");
+//
+//                    backView.setLocked(true);
+//                    backView.setAlpha(1.0f);
+//
+//                    new Thread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            backView.play();
+//                        }
+//                    }).start();
                 }
             })
             .withEndAction(new Runnable() {
                 @Override
                 public void run() {
                     log("Mediaview " + frontView.getLabel() + " (" + Tools.getFileName(frontView.filePath) + ") -> withEndAction");
+
+                    frontView.reset();
 
                     MediaView temp = frontView;
 
@@ -280,6 +308,19 @@ public class MediaDisplayActivity extends AppCompatActivity {
                     }
 
                     frontView.setLocked(false);
+
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            frontView.play();
+                        }
+                    }).start();
+
+                    frontView
+                        .animate()
+                        .alpha(1)
+                        .setDuration(TRANSITION_DURATION)
+                        .start();
 
                     backView.setFile(getNext());
                 }

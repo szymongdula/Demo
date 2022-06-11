@@ -76,7 +76,7 @@ public class LaunchActivity extends AppCompatActivity {
         setupMainHandler();
         verifyStoragePermissions(this);
 
-//        Intent intent = new Intent(getApplicationContext(), MediaDisplayActivity.class);
+//        Intent intent = new Intent(getApplicationContext(), TestActivity.class);
 //        startActivity(intent);
     }
 

@@ -31,6 +31,11 @@ public class MediaView extends ViewGroup {
     private TextView _labelView;
     private TextView _labelChildView;
 
+    long startTime = 0;
+
+    Handler timerHandler;
+    Runnable timerRunnable;
+
     public MediaView(MediaDisplayActivity context, int l, int t, int r, int b, int bg, String lb) {
         super(context);
 
@@ -61,6 +66,21 @@ public class MediaView extends ViewGroup {
         _labelView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20f);
 
         addView(_labelView);
+
+        timerHandler = new Handler();
+        timerRunnable = new Runnable() {
+            @Override
+            public void run() {
+                long millis = System.currentTimeMillis() - startTime;
+                int seconds = (int) (millis / 1000);
+                int minutes = seconds / 60;
+                seconds = seconds % 60;
+
+                _labelView.setText("View " + _label + " > " + Tools.getFileName(filePath) + "   " + String.format("%d:%02d", minutes, seconds));
+
+                timerHandler.postDelayed(this, 500);
+            }
+        };
     }
 
     public void setLocked(Boolean isLocked) {
@@ -120,6 +140,21 @@ public class MediaView extends ViewGroup {
             return;
         }
 
+        startTime = System.currentTimeMillis();
+        timerHandler.postDelayed(timerRunnable, 0);
+
+        switch(fileType) {
+            case "image":
+                imageView.onPlay();
+                break;
+            case "video":
+                videoView.onPlay();
+                break;
+        }
+
+    }
+
+    public void stop() {
         switch(fileType) {
             case "image":
                 imageView.onPlay();
@@ -138,6 +173,8 @@ public class MediaView extends ViewGroup {
         if (fileType == null) {
             return;
         }
+
+        timerHandler.removeCallbacks(timerRunnable);
 
         switch(fileType) {
             case "image":
